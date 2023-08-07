@@ -27,7 +27,6 @@ public class BookModel extends RepresentationModel<BookModel> implements Seriali
 	private int numPaginas;
 	private boolean readyToUse;
 	
-	
 	public boolean isReadyToUse() {
 		return readyToUse;
 	}

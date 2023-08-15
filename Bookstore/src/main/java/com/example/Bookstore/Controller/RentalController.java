@@ -8,20 +8,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.Bookstore.Response.CustomerResponse;
-import com.example.Bookstore.Resquest.CustomerRequest;
-import com.example.Bookstore.Service.CustomerService;
+import com.example.Bookstore.Response.RentalResponse;
+import com.example.Bookstore.Resquest.RentalRequest;
+import com.example.Bookstore.Service.RentalService;
 
 @RestController
-@RequestMapping("/api/customers")
-public class CustomerController {
+@RequestMapping("/api/rentals")
+public class RentalController {
 
     @Autowired
-    private CustomerService customerService;
+    private RentalService rentalService;
 
     @PostMapping
-    public ResponseEntity<CustomerResponse> createCustomer(@RequestBody CustomerRequest customerRequest) {
-        CustomerResponse response = customerService.createCustomer(customerRequest);
+    public ResponseEntity<RentalResponse> createRental(@RequestBody RentalRequest rentalRequest) {
+        RentalResponse response = rentalService.createRental(rentalRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

@@ -1,42 +1,33 @@
 package com.example.Bookstore.Service;
 
-import java.util.Optional;
-
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.Bookstore.DTO.CustomerRecordDTO;
-import com.example.Bookstore.Model.CustomerModel;
+import com.example.Bookstore.Model.Customer;
 import com.example.Bookstore.Repository.CustomerRepository;
-
+import com.example.Bookstore.Response.CustomerResponse;
+import com.example.Bookstore.Resquest.CustomerRequest;
 
 @Service
 public class CustomerService {
-	
-	@Autowired
-	CustomerRepository customerRepository;
 
-	public CustomerModel create(CustomerRecordDTO customerRecordDTO) {
-		
-		CustomerModel customer = new CustomerModel();
+    @Autowired
+    private CustomerRepository customerRepository;
 
-		BeanUtils.copyProperties(customerRecordDTO, customer);
-		
-		customerRepository.save(customer);
-		
-		return customer;
-	}
-	
-	public CustomerModel alter(CustomerRecordDTO customerRecordDTO, Optional<CustomerModel> customer0) {
-		
-		CustomerModel customer = customer0.get();
+    public CustomerResponse createCustomer(CustomerRequest customerRequest) {
+        Customer customer = new Customer();
+        customer.setFirstName(customerRequest.getFirstName());
+        customer.setLastName(customerRequest.getLastName());
+        customer.setEmail(customerRequest.getEmail());
 
-		BeanUtils.copyProperties(customerRecordDTO, customer);
-		
-		customerRepository.save(customer);
-		
-		return customer;
-	}
+        Customer createdCustomer = customerRepository.save(customer);
+
+        CustomerResponse response = new CustomerResponse();
+        response.setFirstName(createdCustomer.getFirstName());
+        response.setLastName(createdCustomer.getLastName());
+        response.setEmail(createdCustomer.getEmail());
+
+        return response;
+    }
 
 }

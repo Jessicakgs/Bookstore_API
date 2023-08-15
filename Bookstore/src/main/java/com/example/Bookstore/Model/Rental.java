@@ -13,7 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity(name = "rentals")
@@ -45,7 +44,7 @@ public class Rental {
         this.rentalDate = LocalDateTime.now();
     }
 
-    @PrePersist
+    
     public void returnDate() {
         this.returnDate = LocalDateTime.now();
     }

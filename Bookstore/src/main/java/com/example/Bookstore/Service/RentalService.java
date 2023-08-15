@@ -9,10 +9,9 @@ import com.example.Bookstore.Model.Rental;
 import com.example.Bookstore.Repository.BookRepository;
 import com.example.Bookstore.Repository.CustomerRepository;
 import com.example.Bookstore.Repository.RentalRepository;
-import com.example.Bookstore.Response.BookResponse;
-import com.example.Bookstore.Response.CustomerResponse;
 import com.example.Bookstore.Response.RentalResponse;
 import com.example.Bookstore.Resquest.RentalRequest;
+import com.example.Bookstore.exception.OutOfStockException;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -27,6 +26,12 @@ public class RentalService {
 
     @Autowired
     private BookRepository bookRepository;
+    
+    @Autowired
+    private BookService bookService;
+    
+    @Autowired
+    private CustomerService customerService;
 
     public RentalResponse createRental(RentalRequest rentalRequest) {
         Customer customer = customerRepository.findById(rentalRequest.getCustomerId())
@@ -34,6 +39,13 @@ public class RentalService {
         
         Book book = bookRepository.findById(rentalRequest.getBookId())
                 .orElseThrow(EntityNotFoundException::new);
+        
+        if (book.getStockQuantity() > 0) {
+            book.setStockQuantity(book.getStockQuantity() - 1);            
+            bookRepository.save(book);
+        }else {
+            throw new OutOfStockException("Não há estoque disponível para este livro.");
+        }
 
         Rental rental = new Rental();
         rental.setCustomer(customer);
@@ -42,8 +54,8 @@ public class RentalService {
         Rental createdRental = rentalRepository.save(rental);
 
         RentalResponse rentalResponse = new RentalResponse();
-        rentalResponse.setCustomer(toCustomerResponse(createdRental.getCustomer()));
-        rentalResponse.setBook(toBookResponse(createdRental.getBook()));
+        rentalResponse.setCustomer(customerService.toCustomerResponse(createdRental.getCustomer()));
+        rentalResponse.setBook(bookService.toBookResponse(createdRental.getBook()));
         rentalResponse.setRentedAt(createdRental.getRentalDate());
         rentalResponse.setReturnedAt(createdRental.getReturnDate());
 
@@ -51,21 +63,7 @@ public class RentalService {
     }
     
 	
-	public static CustomerResponse toCustomerResponse(Customer customer) {
-        CustomerResponse customerResponse = new CustomerResponse();
-        customerResponse.setFirstName(customer.getFirstName());
-        customerResponse.setLastName(customer.getLastName());
-        customerResponse.setEmail(customer.getEmail());
 
-        return customerResponse;
-    }
 	
-	public static BookResponse toBookResponse(Book book) {
-        BookResponse bookResponse = new BookResponse();
-        bookResponse.setTitle(book.getTitle());
-        bookResponse.setAuthor(book.getAuthor());
-        bookResponse.setIsbn(book.getIsbn());
-
-        return bookResponse;
-    }
+	
 }

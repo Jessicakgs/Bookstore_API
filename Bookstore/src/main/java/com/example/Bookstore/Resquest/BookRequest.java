@@ -4,6 +4,7 @@ public class BookRequest {
     private String title;
     private String author;
     private String isbn;
+    private int stockQuantity;
     
 	public String getTitle() {
 		return title;
@@ -22,6 +23,12 @@ public class BookRequest {
 	}
 	public void setIsbn(String isbn) {
 		this.isbn = isbn;
+	}
+	public int getStockQuantity() {
+		return stockQuantity;
+	}
+	public void setStockQuantity(int stockQuantity) {
+		this.stockQuantity = stockQuantity;
 	}
     
 }

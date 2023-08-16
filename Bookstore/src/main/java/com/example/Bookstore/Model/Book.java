@@ -72,8 +72,6 @@ public class Book {
         this.stockQuantity = stockQuantity;
     }
 
-    // Getters e setters para os atributos
-
     public List<Rental> getRentals() {
         return rentals;
     }

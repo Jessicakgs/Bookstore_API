@@ -73,19 +73,19 @@ public class Rental {
 		this.book = book;
 	}
 
-	public LocalDateTime getRentalDate() {
+	public LocalDateTime getRentedAt() {
 		return rentalDate;
 	}
 
-	public void setRentalDate(LocalDateTime rentalDate) {
+	public void setRentedAt(LocalDateTime rentalDate) {
 		this.rentalDate = rentalDate;
 	}
 
-	public LocalDateTime getReturnDate() {
+	public LocalDateTime getReturnedAt() {
 		return returnDate;
 	}
 
-	public void setReturnDate(LocalDateTime returnDate) {
+	public void setReturnedAt(LocalDateTime returnDate) {
 		this.returnDate = returnDate;
 	}
     

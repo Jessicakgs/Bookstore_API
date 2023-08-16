@@ -1,7 +1,12 @@
 package com.example.Bookstore.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.Bookstore.Model.Book;
 import com.example.Bookstore.Model.Customer;
@@ -33,6 +38,7 @@ public class RentalService {
     @Autowired
     private CustomerService customerService;
 
+    @Transactional
     public RentalResponse createRental(RentalRequest rentalRequest) {
         Customer customer = customerRepository.findById(rentalRequest.getCustomerId())
                 .orElseThrow(EntityNotFoundException::new);
@@ -56,13 +62,55 @@ public class RentalService {
         RentalResponse rentalResponse = new RentalResponse();
         rentalResponse.setCustomer(customerService.toCustomerResponse(createdRental.getCustomer()));
         rentalResponse.setBook(bookService.toBookResponse(createdRental.getBook()));
-        rentalResponse.setRentedAt(createdRental.getRentalDate());
-        rentalResponse.setReturnedAt(createdRental.getReturnDate());
+        rentalResponse.setRentedAt(createdRental.getRentedAt());
+        rentalResponse.setReturnedAt(createdRental.getReturnedAt());
 
         return rentalResponse;
     }
     
-	
+    @Transactional(readOnly = true)
+    public RentalResponse getRentalById(Long id) {
+        Rental rental = rentalRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Rental not found with id: " + id));
+        return toRentalResponse(rental);
+    }
+
+    @Transactional(readOnly = true)
+    public List<RentalResponse> getAllRentals() {
+        List<Rental> rentals = rentalRepository.findAll();
+        return rentals.stream()
+                .map(this::toRentalResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteRental(Long id) {
+        rentalRepository.deleteById(id);
+    }
+    
+    @Transactional
+    public RentalResponse returnRental(Long id) {
+        Rental existingRental = rentalRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Rental not found with id: " + id));
+
+        existingRental.setReturnedAt(LocalDateTime.now());
+        Rental updatedRental = rentalRepository.save(existingRental);
+                   
+        bookService.returnBook(existingRental);
+ 
+        return toRentalResponse(updatedRental);
+    }
+    
+    public RentalResponse toRentalResponse(Rental rental) {
+    	RentalResponse rentalResponse = new RentalResponse();
+    	rentalResponse.setCustomer(customerService.toCustomerResponse(rental.getCustomer()));
+    	rentalResponse.setBook(bookService.toBookResponse(rental.getBook()));
+    	rentalResponse.setRentedAt(rental.getRentedAt());
+    	rentalResponse.setReturnedAt(rental.getReturnedAt());
+    	
+
+        return rentalResponse;
+    }
 
 	
 	
